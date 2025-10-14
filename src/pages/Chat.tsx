@@ -32,7 +32,6 @@ const Chat = () => {
 
   const loadBot = async () => {
     if (!botId) return;
-    
     try {
       setLoading(true);
       const data = await api.getBot(botId);
@@ -48,27 +47,22 @@ const Chat = () => {
 
   const handleSend = async () => {
     if (!input.trim() || !botId || sending) return;
-
     const userMessage: ChatMessage = {
       role: 'user',
       content: input,
       timestamp: new Date().toISOString(),
     };
-
     setMessages(prev => [...prev, userMessage]);
     setInput('');
     setSending(true);
-
     try {
       const response = await api.chat(botId, input);
-      
       const assistantMessage: ChatMessage = {
         role: 'assistant',
         content: response.answer,
         timestamp: new Date().toISOString(),
         response_time: response.response_time,
       };
-
       setMessages(prev => [...prev, assistantMessage]);
     } catch (error) {
       toast.error('Failed to send message');
@@ -100,23 +94,25 @@ const Chat = () => {
 
   if (!bot) return null;
 
+  // Grab left and right logo, fallback to icon
+  const leftLogo = bot.logos && bot.logos[0] ? bot.logos[0] : null;
+  const rightLogo = bot.logos && bot.logos[1] ? bot.logos[1] : null;
+
   return (
     <div className="max-w-4xl mx-auto h-[calc(100vh-12rem)] flex flex-col">
+      {/* Header row: left-logo, name, right-logo at far right */}
       <div className="flex items-center justify-between mb-6">
         <div className="flex items-center gap-4">
-          <Button
-            variant="ghost"
-            onClick={() => navigate('/')}
-          >
+          <Button variant="ghost" onClick={() => navigate('/')}>
             <ArrowLeft className="w-4 h-4 mr-2" />
             Back
           </Button>
-          
           <div className="flex items-center gap-3">
-            {bot.logo_left ? (
-              <img 
-                src={bot.logo_left} 
-                alt="Left logo" 
+            {/* Left logo */}
+            {leftLogo ? (
+              <img
+                src={leftLogo}
+                alt="Left logo"
                 className="w-10 h-10 object-contain"
               />
             ) : (
@@ -125,30 +121,28 @@ const Chat = () => {
               </div>
             )}
             <h2 className="text-2xl font-bold text-foreground">{bot.name}</h2>
-            {bot.logo_right ? (
-              <img 
-                src={bot.logo_right} 
-                alt="Right logo" 
-                className="w-10 h-10 object-contain"
-              />
-            ) : (
-              <div className="w-10 h-10 bg-muted rounded-lg flex items-center justify-center">
-                <ImageIcon className="w-5 h-5 text-muted-foreground" />
-              </div>
-            )}
           </div>
         </div>
-
-        {messages.length > 0 && (
-          <Button
-            variant="outline"
-            onClick={clearChat}
-            size="sm"
-          >
-            <Trash2 className="w-4 h-4 mr-2" />
-            Clear Chat
-          </Button>
-        )}
+        <div className="flex items-center gap-2">
+          {/* Right logo at the far right */}
+          {rightLogo ? (
+            <img
+              src={rightLogo}
+              alt="Right logo"
+              className="w-10 h-10 object-contain"
+            />
+          ) : (
+            <div className="w-10 h-10 bg-muted rounded-lg flex items-center justify-center">
+              <ImageIcon className="w-5 h-5 text-muted-foreground" />
+            </div>
+          )}
+          {messages.length > 0 && (
+            <Button variant="outline" onClick={clearChat} size="sm">
+              <Trash2 className="w-4 h-4 mr-2" />
+              Clear Chat
+            </Button>
+          )}
+        </div>
       </div>
 
       <div className="flex-1 bg-card rounded-xl border border-border shadow-lg overflow-hidden flex flex-col">
