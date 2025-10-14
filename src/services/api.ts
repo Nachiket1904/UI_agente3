@@ -1,8 +1,14 @@
 import axios from 'axios';
 
-// const API_BASE_URL = 'http://localhost:8000';
+// Set your base API URL
 const API_BASE_URL = import.meta.env.VITE_API_BASE_URL || 'http://127.0.0.1:8000';
 
+// Converts a local file path to a public static URL for FastAPI
+function toStaticUrl(path: string): string {
+  // Replace Windows backslashes with slashes, remove leading 'bots/', and prepend API static path
+  const normalized = path.replace(/\\/g, '/').replace(/^bots\//, '');
+  return `${API_BASE_URL}/static/${normalized}`;
+}
 
 export interface Bot {
   id: string;
@@ -11,6 +17,8 @@ export interface Bot {
   logo_left?: string;
   logo_right?: string;
   created_at?: string;
+  logos?: string[]; // Add this if bots have logos array
+  pdfs?: string[];  // Add this if bots have pdfs array
 }
 
 export interface ChatMessage {
@@ -33,13 +41,24 @@ export const api = {
   // Get all bots
   getBots: async (): Promise<Bot[]> => {
     const response = await axios.get(`${API_BASE_URL}/bots/bots`);
-    return response.data;
+    console.log("Fetched bots:", response.data);
+    // Map logo and pdf paths to proper URLs
+    return response.data.map((bot: any) => ({
+      ...bot,
+      logos: bot.logos ? bot.logos.map(toStaticUrl) : [],
+      pdfs: bot.pdfs ? bot.pdfs.map(toStaticUrl) : [],
+    }));
   },
 
   // Get single bot
   getBot: async (botId: string): Promise<Bot> => {
     const response = await axios.get(`${API_BASE_URL}/bots/${botId}`);
-    return response.data;
+    const bot = response.data;
+    return {
+      ...bot,
+      logos: bot.logos ? bot.logos.map(toStaticUrl) : [],
+      pdfs: bot.pdfs ? bot.pdfs.map(toStaticUrl) : [],
+    };
   },
 
   // Create new bot
@@ -53,7 +72,6 @@ export const api = {
     const formData = new FormData();
     formData.append('name', data.name);
     formData.append('system_prompt', data.system_prompt);
-    
     if (data.logo_left) {
       formData.append('logo_left', data.logo_left);
     }
@@ -65,7 +83,6 @@ export const api = {
         formData.append('pdfs', pdf);
       });
     }
-
     const response = await axios.post(`${API_BASE_URL}/bots`, formData, {
       headers: {
         'Content-Type': 'multipart/form-data',
@@ -86,7 +103,6 @@ export const api = {
     }
   ): Promise<Bot> => {
     const formData = new FormData();
-    
     if (data.system_prompt) {
       formData.append('system_prompt', data.system_prompt);
     }
@@ -104,7 +120,6 @@ export const api = {
     if (data.rebuild_vectorstore !== undefined) {
       formData.append('rebuild_vectorstore', String(data.rebuild_vectorstore));
     }
-
     const response = await axios.put(`${API_BASE_URL}/bots/${botId}`, formData, {
       headers: {
         'Content-Type': 'multipart/form-data',
@@ -119,7 +134,6 @@ export const api = {
   },
 
   // Chat with bot
-  // Chat with bot
   chat: async (botId: string, question: string): Promise<ChatResponse> => {
     const response = await axios.post(`${API_BASE_URL}/chat`, {
       bot_id: botId,
@@ -127,7 +141,4 @@ export const api = {
     });
     return response.data;
   },
-
 };
-
-
