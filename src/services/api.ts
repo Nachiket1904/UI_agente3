@@ -32,7 +32,7 @@ export interface ChatResponse {
 export const api = {
   // Get all bots
   getBots: async (): Promise<Bot[]> => {
-    const response = await axios.get(`${API_BASE_URL}/bots/bots`);
+    const response = await axios.get(`${API_BASE_URL}bots/bots`);
     return response.data;
   },
 
