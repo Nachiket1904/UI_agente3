@@ -1,0 +1,11 @@
+openai
+langchain_nvidia_ai_endpoints
+langchain_community
+faiss-cpu
+python-dotenv
+streamlit
+pypdf
+# Core framework and server
+fastapi==0.115.8
+uvicorn[standard]==0.22.0
+gunicorn==20.1.0
