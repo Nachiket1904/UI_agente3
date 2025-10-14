@@ -38,7 +38,7 @@ export const api = {
 
   // Get single bot
   getBot: async (botId: string): Promise<Bot> => {
-    const response = await axios.get(`${API_BASE_URL}/bots/${botId}`);
+    const response = await axios.get(`${API_BASE_URL}bots/${botId}`);
     return response.data;
   },
 
@@ -66,7 +66,7 @@ export const api = {
       });
     }
 
-    const response = await axios.post(`${API_BASE_URL}/bots`, formData, {
+    const response = await axios.post(`${API_BASE_URL}bots`, formData, {
       headers: {
         'Content-Type': 'multipart/form-data',
       },
@@ -105,7 +105,7 @@ export const api = {
       formData.append('rebuild_vectorstore', String(data.rebuild_vectorstore));
     }
 
-    const response = await axios.put(`${API_BASE_URL}/bots/${botId}`, formData, {
+    const response = await axios.put(`${API_BASE_URL}bots/${botId}`, formData, {
       headers: {
         'Content-Type': 'multipart/form-data',
       },
@@ -115,13 +115,13 @@ export const api = {
 
   // Delete bot
   deleteBot: async (botId: string): Promise<void> => {
-    await axios.delete(`${API_BASE_URL}/bots/${botId}`);
+    await axios.delete(`${API_BASE_URL}bots/${botId}`);
   },
 
   // Chat with bot
   // Chat with bot
   chat: async (botId: string, question: string): Promise<ChatResponse> => {
-    const response = await axios.post(`${API_BASE_URL}/chat`, {
+    const response = await axios.post(`${API_BASE_URL}chat`, {
       bot_id: botId,
       query: question,
     });
