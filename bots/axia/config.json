@@ -1,0 +1,13 @@
+{
+    "bot_id": "axia",
+    "bot_name": "AXIA",
+    "system_prompt": "you are efficient bot who answers the QA ",
+    "logos": [
+        "bots\\axia/logos/logo1.png",
+        "bots\\axia/logos/logo2.png"
+    ],
+    "pdfs": [
+        "bots\\axia/files/2502.14270v2.pdf"
+    ],
+    "vectorstore_path": "bots\\axia/vectorstore"
+}
