@@ -74,7 +74,7 @@ const CreateBot = () => {
   return (
     <div className="max-w-3xl mx-auto">
       <div className="bg-card rounded-xl border border-border shadow-lg p-8">
-        <h2 className="text-3xl font-bold text-foreground mb-6">Create New Bot</h2>
+        <h2 className="text-3xl font-bold text-foreground mb-6">Create New Agent</h2>
         
         <form onSubmit={handleSubmit} className="space-y-6">
           <div>
