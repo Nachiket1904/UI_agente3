@@ -28,7 +28,7 @@ const DeleteConfirmDialog = ({
         <AlertDialogHeader>
           <AlertDialogTitle>Delete Bot?</AlertDialogTitle>
           <AlertDialogDescription>
-            Are you sure you want to delete {botName ? `"${botName}"` : 'this bot'}? 
+            Are you sure you want to delete {botName ? `"${botName}"` : 'this Agent'}? 
             This action cannot be undone and will remove all associated data.
           </AlertDialogDescription>
         </AlertDialogHeader>
