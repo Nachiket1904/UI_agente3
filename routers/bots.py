@@ -1,8 +1,13 @@
 from fastapi import APIRouter, UploadFile, Form, HTTPException, Depends
 from typing import List, Optional
 from utils import rag_utils, file_utils, db_utils
+from fastapi.responses import RedirectResponse 
 
 router = APIRouter(prefix="/bots", tags=["Bots"])
+
+@router.get("")  # GET /bots
+async def redirect_to_bots():
+    return RedirectResponse(url="/bots/bots")
 
 @router.get("/bots")
 def list_bots():
@@ -147,3 +152,34 @@ async def update_bot_alias(
         new_pdfs=pdfs,
         rebuild_vectorstore=rebuild_vectorstore
     )
+
+
+@router.delete("/{bot_id}/pdf")
+async def delete_pdf(bot_id: str, pdf_name: str):
+    """
+    Delete a specific PDF from a bot and update its config.
+    """
+    bot_config = db_utils.get_bot_config(bot_id)
+    if not bot_config:
+        raise HTTPException(status_code=404, detail="Bot not found")
+
+    pdfs = bot_config.get("pdfs", [])
+    # Find matching PDF by filename
+    updated_pdfs = [p for p in pdfs if not p.endswith(pdf_name)]
+    if len(updated_pdfs) == len(pdfs):
+        raise HTTPException(status_code=404, detail="PDF not found in bot config")
+
+    # Delete actual file if exists
+    for p in pdfs:
+        if p.endswith(pdf_name):
+            try:
+                import os
+                os.remove(p)
+            except FileNotFoundError:
+                pass
+
+    # Update config
+    bot_config["pdfs"] = updated_pdfs
+    db_utils.save_config(f"bots/{bot_id}", bot_config)
+
+    return {"status": "deleted", "pdf_name": pdf_name}
