@@ -133,6 +133,14 @@ export const api = {
     await axios.delete(`${API_BASE_URL}/bots/${botId}`);
   },
 
+  // Delete a single PDF
+  deletePdf: async (botId: string, pdfName: string): Promise<void> => {
+    await axios.delete(`${API_BASE_URL}/bots/${botId}/pdf`, {
+      params: { pdf_name: pdfName },
+    });
+  },
+
+
   // Chat with bot
   chat: async (botId: string, question: string): Promise<ChatResponse> => {
     const response = await axios.post(`${API_BASE_URL}/chat`, {
@@ -142,3 +150,4 @@ export const api = {
     return response.data;
   },
 };
+
