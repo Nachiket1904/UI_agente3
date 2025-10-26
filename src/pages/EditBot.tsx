@@ -224,6 +224,55 @@ const EditBot = () => {
               </div>
             )}
           </div>
+          <div>
+          <Label>Existing PDFs</Label>
+          {bot.pdfs && bot.pdfs.length > 0 ? (
+            <div className="mt-2 space-y-2">
+              {bot.pdfs.map((pdfUrl, index) => {
+                const pdfName = pdfUrl.split('/').pop(); // extract filename
+                return (
+                  <div key={index} className="flex items-center justify-between p-3 bg-muted rounded-lg">
+                    <div className="flex items-center gap-2">
+                      <FileText className="w-4 h-4 text-primary" />
+                      <a
+                        href={pdfUrl}
+                        target="_blank"
+                        rel="noopener noreferrer"
+                        className="text-sm text-blue-600 hover:underline"
+                      >
+                        {pdfName}
+                      </a>
+                    </div>
+                    <Button
+                      type="button"
+                      variant="ghost"
+                      size="sm"
+                      onClick={async () => {
+                        try {
+                          await api.deletePdf(bot.bot_id || botId!, pdfName!);
+                          toast.success(`Deleted ${pdfName}`);
+                          // Remove from local state to update UI
+                          setBot({
+                            ...bot,
+                            pdfs: bot.pdfs!.filter((p) => !p.endsWith(pdfName!)),
+                          });
+                        } catch (err) {
+                          console.error(err);
+                          toast.error(`Failed to delete ${pdfName}`);
+                        }
+                      }}
+                    >
+                      Remove
+                    </Button>
+                  </div>
+                );
+              })}
+            </div>
+          ) : (
+            <p className="text-sm text-muted-foreground mt-2">No PDFs found</p>
+          )}
+        </div>
+
 
           <div className="flex items-center gap-2 p-4 bg-muted rounded-lg">
             <Checkbox
