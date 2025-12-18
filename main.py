@@ -1,10 +1,9 @@
 from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
-from routers import bots, chat
-from fastapi.staticfiles import StaticFiles
 import os
+from pydantic import BaseModel
 
-app = FastAPI(title="Custom RAG Bot Builder")
+app = FastAPI(title="Beehvi setup")
 
 # CORS for React
 app.add_middleware(
@@ -15,16 +14,25 @@ app.add_middleware(
     allow_headers=["*"],
 )
 
-app.include_router(bots.router)
-app.include_router(chat.router)
-# app.include_router(files.router)
-
-# # ✅ Serve static files (logos, PDFs, etc.)
-# bots_dir = os.path.join(os.getcwd(), "bots")
-# app.mount("/bots", StaticFiles(directory=bots_dir), name="bots")
-app.mount("/static", StaticFiles(directory="bots"), name="static")
+class InputData(BaseModel):
+    name: str
+    value: int
+    md_content : str
 
 @app.get("/")
 def home():
     return {"message": "RAG Bot API is running 🚀"}
+
+@app.post("/process")
+def process_data(data: InputData):
+    # ---- Your logic here ----
+    result = data.value * 2
+    print(data.md_content)
+    
+    return {
+        "status": "success",
+        "message": f"Hello {data.name}, processed value is {result} and content is {data.md_content}",
+        "result": result
+    }
+
 
